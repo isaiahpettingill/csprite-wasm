@@ -20,6 +20,7 @@
 			height: 100vh;
 			background: #000;
 			outline: none;
+			touch-action: none;
 		}
 	</style>
 </head>
@@ -40,6 +41,25 @@
 		canvas.addEventListener("webglcontextlost", (event) => {
 			event.preventDefault();
 			console.error("WebGL context lost. Reload the page.");
+		});
+
+		canvas.focus();
+		canvas.addEventListener("pointerdown", () => canvas.focus());
+
+		window.addEventListener("wheel", (event) => {
+			if (event.ctrlKey) {
+				event.preventDefault();
+			}
+		}, { passive: false });
+
+		window.addEventListener("keydown", (event) => {
+			if (!event.ctrlKey && !event.metaKey) {
+				return;
+			}
+
+			if (event.key === "+" || event.key === "=" || event.key === "-" || event.key === "_") {
+				event.preventDefault();
+			}
 		});
 	</script>
 	<script async src="csprite.js"></script>
