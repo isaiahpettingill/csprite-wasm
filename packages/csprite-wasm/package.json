@@ -10,10 +10,17 @@
       "types": "./index.d.ts",
       "import": "./dist/csprite_api.js"
     },
-    "./csprite_api.wasm": "./dist/csprite_api.wasm"
+    "./editor": {
+      "types": "./editor.d.ts",
+      "import": "./editor.js"
+    },
+    "./csprite_api.wasm": "./dist/csprite_api.wasm",
+    "./csprite_editor.wasm": "./dist/csprite_editor.wasm"
   },
   "files": [
     "dist/",
+    "editor.d.ts",
+    "editor.js",
     "index.d.ts",
     "README.md"
   ],

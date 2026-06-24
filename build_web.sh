@@ -15,6 +15,7 @@ APP_C_FLAGS='-DCIMGUI_USE_GLFW=1 -DCIMGUI_USE_OPENGL3=1 -DCIMGUI_DEFINE_ENUMS_AN
 APP_CPP_FLAGS='-DCIMGUI_USE_GLFW=1 -DCIMGUI_USE_OPENGL3=1 -DIMGUI_IMPL_OPENGL_ES3=1'
 APP_C_SOURCES='src/app/main.c src/app/gui.c src/app/render.c src/app/editor.c src/os/os.c src/os/gfx.c src/base/arena.c src/base/string.c src/raster/raster.c src/raster/gfx.c src/raster/math.c src/assets/assets.c vendor/log.c/src/log.c vendor/stb/impl.c'
 APP_CPP_SOURCES='src/cimgui/impl.cpp'
+APP_EXPORTS='["_malloc","_free","_main","_csprite_editor_width","_csprite_editor_height","_csprite_editor_pixels_size","_csprite_editor_pixels","_csprite_editor_load_rgba"]'
 API_C_SOURCES='src/web/api.c src/raster/gfx.c src/raster/math.c'
 API_EXPORTS='["_malloc","_free","_csprite_create","_csprite_destroy","_csprite_width","_csprite_height","_csprite_pixels_size","_csprite_pixels","_csprite_set_rgba","_csprite_set_brush_size","_csprite_set_filled","_csprite_clear","_csprite_copy_rgba_in","_csprite_get_pixel","_csprite_set_pixel","_csprite_draw_line","_csprite_draw_rect","_csprite_draw_ellipse","_csprite_draw_circle"]'
 
@@ -59,7 +60,20 @@ $CXX $APP_OBJECTS -o "$BUILD/csprite.html" \
 	-sFULL_ES3=1 \
 	-sMIN_WEBGL_VERSION=2 \
 	-sMAX_WEBGL_VERSION=2 \
-	-sALLOW_MEMORY_GROWTH=1
+	-sALLOW_MEMORY_GROWTH=1 \
+	-sEXPORTED_FUNCTIONS="$APP_EXPORTS"
+
+$CXX $APP_OBJECTS -o "$BUILD/csprite_editor.js" \
+	-sMODULARIZE=1 \
+	-sEXPORT_ES6=1 \
+	-sEXPORT_NAME=createCspriteEditorModule \
+	-sENVIRONMENT=web \
+	-sUSE_GLFW=3 \
+	-sFULL_ES3=1 \
+	-sMIN_WEBGL_VERSION=2 \
+	-sMAX_WEBGL_VERSION=2 \
+	-sALLOW_MEMORY_GROWTH=1 \
+	-sEXPORTED_FUNCTIONS="$APP_EXPORTS"
 
 API_OBJECTS=''
 for source in $API_C_SOURCES; do

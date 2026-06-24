@@ -1,6 +1,6 @@
 # @josemancharo/csprite-wasm
 
-Embeddable WebAssembly build of csprite's raster drawing core. It gives JavaScript applications direct access to csprite document creation, raw RGBA pixel buffers, and basic drawing operations without mounting the full editor UI.
+Embeddable WebAssembly build of csprite. It includes the full canvas-based editor and direct access to csprite document creation, raw RGBA pixel buffers, and basic drawing operations.
 
 The interactive browser build is deployed at:
 
@@ -13,6 +13,26 @@ npm install @josemancharo/csprite-wasm
 ```
 
 ## Quick Start
+
+Mount the interactive editor to a canvas:
+
+```ts
+import { mountCspriteEditor } from "@josemancharo/csprite-wasm/editor";
+
+await mountCspriteEditor({ canvas: document.querySelector("canvas")! });
+```
+
+The editor currently uses Emscripten/GLFW's global `#canvas` target, so mount one editor instance per page.
+
+Load and save raw RGBA pixels through the returned handle:
+
+```ts
+const editor = await mountCspriteEditor({ canvas });
+editor.loadRgba(16, 16, pixels);
+const edited = editor.readRgba();
+```
+
+## Raster API
 
 ```ts
 import createCspriteModule from "@josemancharo/csprite-wasm";
@@ -86,7 +106,7 @@ TypeScript declarations are included in the package.
 
 ## Publishing
 
-This package is configured for npm trusted publishing from GitHub Actions.
+This package is configured for npm trusted publishing from GitHub Actions. Pushes to `master` publish the package when the current `package.json` version is not already on npm. Releases and manual workflow dispatch can also run the publish workflow.
 
 Trusted publisher settings on npm:
 - Package: `@josemancharo/csprite-wasm`

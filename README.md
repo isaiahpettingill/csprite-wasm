@@ -59,10 +59,12 @@ Build both browser artifacts:
 
 Outputs are written to `build/web/`:
 - `csprite.html`, `csprite.js`, `csprite.wasm`: the interactive ImGui/WebGL editor.
+- `csprite_editor.js`, `csprite_editor.wasm`: a modular ES build for embedding the full editor on an existing canvas.
 - `csprite_api.js`, `csprite_api.wasm`: an ES module for embedding csprite drawing operations in a JavaScript site.
 
-The embeddable API is also packaged for npm as `@josemancharo/csprite-wasm` with TypeScript declarations.
+The embeddable editor and raster API are packaged for npm as `@josemancharo/csprite-wasm` with TypeScript declarations.
 The GitHub Pages deployment is available at <https://isaiahpettingill.github.io/csprite-wasm/>.
+Pushing to `master` deploys GitHub Pages and publishes the npm package when `packages/csprite-wasm/package.json` contains a version that is not already on npm.
 
 Run the interactive build through a local HTTP server, for example:
 

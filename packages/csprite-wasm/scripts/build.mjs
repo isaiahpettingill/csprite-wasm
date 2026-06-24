@@ -20,3 +20,5 @@ rmSync(dist, { force: true, recursive: true });
 mkdirSync(dist, { recursive: true });
 copyFileSync(join(repoRoot, "build", "web", "csprite_api.js"), join(dist, "csprite_api.js"));
 copyFileSync(join(repoRoot, "build", "web", "csprite_api.wasm"), join(dist, "csprite_api.wasm"));
+copyFileSync(join(repoRoot, "build", "web", "csprite_editor.js"), join(dist, "csprite_editor.js"));
+copyFileSync(join(repoRoot, "build", "web", "csprite_editor.wasm"), join(dist, "csprite_editor.wasm"));

@@ -7,11 +7,64 @@
 	#include <emscripten.h>
 #endif
 
+#include <stdint.h>
+#include <string.h>
+
 typedef struct {
 	OS_Handle window;
 	Editor ed;
 	bool do_open_new_file_modal;
 } App;
+
+static App g_app;
+static B32 g_app_ready;
+
+#ifdef TARGET_WEB
+	#define CSPRITE_EXPORT EMSCRIPTEN_KEEPALIVE
+
+static U32 app_pixels_size(Editor* ed) {
+	U64 size = (U64)ed->image.dim.w * (U64)ed->image.dim.h * sizeof(RGBAU8);
+	return size <= UINT32_MAX ? (U32)size : 0;
+}
+
+CSPRITE_EXPORT U32 csprite_editor_width(void) {
+	return g_app_ready ? g_app.ed.image.dim.w : 0;
+}
+
+CSPRITE_EXPORT U32 csprite_editor_height(void) {
+	return g_app_ready ? g_app.ed.image.dim.h : 0;
+}
+
+CSPRITE_EXPORT U32 csprite_editor_pixels_size(void) {
+	return g_app_ready ? app_pixels_size(&g_app.ed) : 0;
+}
+
+CSPRITE_EXPORT U8* csprite_editor_pixels(void) {
+	return g_app_ready ? (U8*)g_app.ed.image.data : NULL;
+}
+
+CSPRITE_EXPORT B32 csprite_editor_load_rgba(U32 width, U32 height, const U8* pixels, U32 size) {
+	if (!g_app_ready || width == 0 || height == 0 || pixels == NULL) {
+		return 0;
+	}
+
+	U64 expected_size64 = (U64)width * (U64)height * sizeof(RGBAU8);
+	if (expected_size64 > UINT32_MAX || size < (U32)expected_size64) {
+		return 0;
+	}
+
+	ed_release(&g_app.ed);
+	g_app.ed = ed_init(width, height);
+	memcpy(g_app.ed.image.data, pixels, (size_t)expected_size64);
+	r_tex_update(g_app.ed.image_tex, 0, 0, width, height, width, (U8*)g_app.ed.image.data);
+
+	ImGuiIO* io = igGetIO_Nil();
+	g_app.ed.view_scale = 5;
+	Editor_UpdateView(&g_app.ed);
+	Editor_CenterView(&g_app.ed, (Rect){ io->DisplaySize.x, io->DisplaySize.y });
+	return 1;
+}
+#endif
 
 static void app_frame(void* user_data) {
 	App* app = user_data;
@@ -227,16 +280,16 @@ static void app_release(App* app) {
 #endif
 
 int main(void) {
-	static App app;
-	app = app_init();
+	g_app = app_init();
+	g_app_ready = true;
 
 #ifdef TARGET_WEB
-	emscripten_set_main_loop_arg(app_frame, &app, 0, true);
+	emscripten_set_main_loop_arg(app_frame, &g_app, 0, true);
 #else
-	while (!os_window_should_close(app.window)) {
-		app_frame(&app);
+	while (!os_window_should_close(g_app.window)) {
+		app_frame(&g_app);
 	}
-	app_release(&app);
+	app_release(&g_app);
 #endif
 
 	return 0;
