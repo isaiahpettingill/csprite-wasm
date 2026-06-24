@@ -3,6 +3,7 @@
 
 #include "os/linux/os.c"
 #include "os/win32/os.c"
+#include "os/web/os.c"
 
 OS_Handle os_handle_zero(void) {
 	OS_Handle h = {0};

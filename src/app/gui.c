@@ -4,7 +4,9 @@
 #include "log/log.h"
 #include "assets/assets.h"
 
-#ifdef TARGET_WINDOWS
+#ifdef TARGET_WEB
+	#include <GLES3/gl3.h>
+#elif defined(TARGET_WINDOWS)
 	#include <windows.h>
 	#include <GL/GL.h>
 #else
@@ -19,7 +21,11 @@ void gui_init(OS_Handle w) {
 #else
 	ImGui_ImplGlfw_InitForOpenGL(os_window_get_native_handle(w), true);
 #endif
+#ifdef TARGET_WEB
+	ImGui_ImplOpenGL3_Init("#version 300 es");
+#else
 	ImGui_ImplOpenGL3_Init("#version 130");
+#endif
 
 	ImGuiIO* io = igGetIO_Nil();
 	io->IniFilename = NULL;

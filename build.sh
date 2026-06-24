@@ -21,7 +21,7 @@ if [ "$KERNEL" = "Linux" ]; then
 	if [ "$CXX" = "clang++" ]; then
 		LFLAGS="$LFLAGS -liomp5"
 	fi
-elif [ "$KERNEL" = "Windows_NT" ] || [ "$(uname -o)" = "Cygwin" ]; then
+elif [ "$KERNEL" = "Windows_NT" ] || [ "$(uname -o)" = "Cygwin" ] || [ "${KERNEL#MINGW}" != "$KERNEL" ] || [ "${KERNEL#MSYS}" != "$KERNEL" ]; then
 	FLAGS="$FLAGS -DTARGET_WINDOWS=1 -DWIN32_LEAN_AND_MEAN=1 -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 -DCIMGUI_USE_WIN32=1"
 	LFLAGS="$LFLAGS -lgdi32 -lopengl32 -lcomdlg32"
 	BIN="$BIN.exe"

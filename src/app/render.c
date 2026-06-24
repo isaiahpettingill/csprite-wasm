@@ -1,7 +1,9 @@
 #include "app/render.h"
 #include "os/os.h"
 
-#ifdef TARGET_WINDOWS
+#ifdef TARGET_WEB
+	#include <GLES3/gl3.h>
+#elif defined(TARGET_WINDOWS)
 	#include <windows.h>
 	#include <GL/GL.h>
 #else

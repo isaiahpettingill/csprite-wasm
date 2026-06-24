@@ -1,0 +1,40 @@
+name: Publish NPM
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    environment: npm
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        registry-url: https://registry.npmjs.org
+
+    - name: Setup Emscripten
+      uses: mymindstorm/setup-emsdk@v14
+      with:
+        version: latest
+
+    - name: Install Python Modules
+      run: python3 -m pip install --upgrade Pillow
+
+    - name: Build Package
+      working-directory: packages/csprite-wasm
+      run: npm run build
+
+    - name: Publish
+      working-directory: packages/csprite-wasm
+      run: npm publish --access public --provenance

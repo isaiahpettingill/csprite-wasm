@@ -1,0 +1,56 @@
+name: Pages
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+
+    - name: Setup Emscripten
+      uses: mymindstorm/setup-emsdk@v14
+      with:
+        version: latest
+
+    - name: Install Python Modules
+      run: python3 -m pip install --upgrade Pillow
+
+    - name: Build Web
+      run: sh ./build_web.sh
+
+    - name: Prepare Site
+      run: |
+        mkdir -p build/pages
+        cp web/index.html build/pages/index.html
+        cp build/web/csprite.js build/pages/
+        cp build/web/csprite.wasm build/pages/
+        touch build/pages/.nojekyll
+
+    - name: Upload Pages Artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: build/pages
+
+    - name: Deploy Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

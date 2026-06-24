@@ -23,6 +23,10 @@
 #include <stdlib.h>
 #include "log/log.h"
 
+#ifdef TARGET_WEB
+#include <emscripten.h>
+#endif
+
 #define MAX_CALLBACKS 32
 
 typedef struct {
@@ -52,6 +56,30 @@ static const char *level_colors[] = {
 
 
 static void stdout_callback(log_Event *ev) {
+#ifdef TARGET_WEB
+  char msg[2048];
+  int len = snprintf(
+    msg, sizeof(msg), "%s %-5s %s:%d: ",
+    "", level_strings[ev->level], ev->file, ev->line);
+  if (len < 0) {
+    return;
+  }
+
+  if ((size_t)len < sizeof(msg)) {
+    vsnprintf(msg + len, sizeof(msg) - (size_t)len, ev->fmt, ev->ap);
+  }
+
+  EM_ASM({
+    const msg = UTF8ToString($0);
+    switch ($1) {
+      case 0: console.trace(msg); break;
+      case 1: console.debug(msg); break;
+      case 2: console.info(msg); break;
+      case 3: console.warn(msg); break;
+      default: console.error(msg); break;
+    }
+  }, msg, ev->level);
+#else
   char buf[16];
   buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
@@ -67,6 +95,7 @@ static void stdout_callback(log_Event *ev) {
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
+#endif
 }
 
 

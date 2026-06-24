@@ -9,7 +9,11 @@
 #include <stdint.h>
 
 #define DEFAULT_ALIGNMENT sizeof(void*)
+#ifdef TARGET_WEB
+#define ARENA_MAX_RESERVE MB(32)
+#else
 #define ARENA_MAX_RESERVE GB(16)
+#endif
 #define ARENA_COMMIT_SIZE KB(64)
 
 Arena arena_init(void) {

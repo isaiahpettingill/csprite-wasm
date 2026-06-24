@@ -1,0 +1,44 @@
+{
+  "name": "@josemancharo/csprite-wasm",
+  "version": "0.1.1",
+  "description": "Embeddable WebAssembly build of csprite's raster drawing core.",
+  "type": "module",
+  "module": "./dist/csprite_api.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./dist/csprite_api.js"
+    },
+    "./csprite_api.wasm": "./dist/csprite_api.wasm"
+  },
+  "files": [
+    "dist/",
+    "index.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "csprite",
+    "wasm",
+    "webassembly",
+    "pixel-art",
+    "raster"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaiahpettingill/csprite-wasm.git",
+    "directory": "packages/csprite-wasm"
+  },
+  "bugs": {
+    "url": "https://github.com/isaiahpettingill/csprite-wasm/issues"
+  },
+  "homepage": "https://isaiahpettingill.github.io/csprite-wasm/",
+  "publishConfig": {
+    "access": "public"
+  }
+}

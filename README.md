@@ -45,6 +45,66 @@ Requirements for Linux:
   > by a second or two which makes things a bit less annoying.
 - [Python v3.0+](https://repology.org/project/python3/versions)
 
+### Web / Emscripten
+
+Requirements:
+- [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) with `emcc` and `em++` on `PATH`.
+- Python v3.0+ for generating embedded assets.
+
+Build both browser artifacts:
+
+```sh
+./build_web.sh
+```
+
+Outputs are written to `build/web/`:
+- `csprite.html`, `csprite.js`, `csprite.wasm`: the interactive ImGui/WebGL editor.
+- `csprite_api.js`, `csprite_api.wasm`: an ES module for embedding csprite drawing operations in a JavaScript site.
+
+The embeddable API is also packaged for npm as `@josemancharo/csprite-wasm` with TypeScript declarations.
+The GitHub Pages deployment is available at <https://isaiahpettingill.github.io/csprite-wasm/>.
+
+Run the interactive build through a local HTTP server, for example:
+
+```sh
+emrun build/web/csprite.html
+```
+
+Embed the programmatic API from JavaScript:
+
+```js
+import createCspriteModule from "./build/web/csprite_api.js";
+
+const csprite = await createCspriteModule();
+const doc = csprite._csprite_create(64, 64);
+
+csprite._csprite_clear(doc, 0, 0, 0, 0);
+csprite._csprite_set_rgba(doc, 255, 0, 0, 255);
+csprite._csprite_draw_line(doc, 0, 0, 63, 63);
+
+const ptr = csprite._csprite_pixels(doc);
+const size = csprite._csprite_pixels_size(doc);
+const pixels = new Uint8ClampedArray(csprite.HEAPU8.buffer, ptr, size);
+
+const canvas = document.querySelector("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = csprite._csprite_width(doc);
+canvas.height = csprite._csprite_height(doc);
+ctx.putImageData(new ImageData(pixels, canvas.width, canvas.height), 0, 0);
+
+csprite._csprite_destroy(doc);
+```
+
+To pass an existing RGBA buffer into WASM:
+
+```js
+const input = new Uint8Array(width * height * 4);
+const inputPtr = csprite._malloc(input.byteLength);
+csprite.HEAPU8.set(input, inputPtr);
+csprite._csprite_copy_rgba_in(doc, inputPtr, input.byteLength);
+csprite._free(inputPtr);
+```
+
 ## Roadmap
 - [ ] Tool Preview - Just have a buffer on which user's action
       are cleared (by storing dirty from previous user input) &
