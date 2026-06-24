@@ -6,6 +6,7 @@
 
 #ifdef TARGET_WEB
 	#include <GLES3/gl3.h>
+	#include <emscripten/html5.h>
 #elif defined(TARGET_WINDOWS)
 	#include <windows.h>
 	#include <GL/GL.h>
@@ -117,6 +118,12 @@ void gui_begin_frame(OS_Handle window) {
 void gui_end_frame(OS_Handle w) {
 	igEndFrame();
 	igRender();
+#ifdef TARGET_WEB
+	S32 width = 0;
+	S32 height = 0;
+	emscripten_get_canvas_element_size("#canvas", &width, &height);
+	glViewport(0, 0, width, height);
+#endif
 	glClearColor(0, 0, 0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	ImGui_ImplOpenGL3_RenderDrawData(igGetDrawData());

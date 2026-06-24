@@ -5,115 +5,41 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>csprite</title>
 	<style>
-		:root {
-			color-scheme: dark;
-			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			background: #101014;
-			color: #f2f2f4;
-		}
-
+		html,
 		body {
 			margin: 0;
-			min-height: 100vh;
-			background: radial-gradient(circle at top left, #303044, #101014 55%);
-		}
-
-		main {
-			display: grid;
-			grid-template-rows: auto minmax(0, 1fr);
-			min-height: 100vh;
-		}
-
-		header {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 1rem;
-			padding: 0.8rem 1rem;
-			border-bottom: 1px solid #2a2a36;
-			background: rgba(12, 12, 18, 0.86);
-			backdrop-filter: blur(16px);
-		}
-
-		h1 {
-			margin: 0;
-			font-size: 1rem;
-			letter-spacing: 0.06em;
-			text-transform: uppercase;
-		}
-
-		#status {
-			font-size: 0.9rem;
-			color: #b8b8c6;
-		}
-
-		#stage {
-			display: grid;
-			place-items: center;
-			padding: 1rem;
-			min-height: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			background: #000;
 		}
 
 		canvas {
-			width: min(100%, 1100px);
-			height: min(72vh, 760px);
-			border: 1px solid #363648;
+			display: block;
+			width: 100vw;
+			height: 100vh;
 			background: #000;
-			box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
 			outline: none;
-		}
-
-		button {
-			border: 1px solid #55556c;
-			border-radius: 999px;
-			padding: 0.45rem 0.8rem;
-			background: #20202c;
-			color: #f2f2f4;
-			cursor: pointer;
 		}
 	</style>
 </head>
 <body>
-	<main>
-		<header>
-			<h1>csprite</h1>
-			<div id="status">Downloading...</div>
-			<button id="fullscreen" type="button">Fullscreen</button>
-		</header>
-		<section id="stage">
-			<canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
-		</section>
-	</main>
-
+	<canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
 	<script>
-		const statusElement = document.getElementById("status");
-		const canvasElement = document.getElementById("canvas");
+		const canvas = document.getElementById("canvas");
 
 		var Module = {
-			canvas: canvasElement,
+			canvas,
 			print: (text) => console.log(text),
 			printErr: (text) => console.error(text),
 			setStatus: (text) => {
-				statusElement.textContent = text || "Ready";
-			},
-			monitorRunDependencies: (remaining) => {
-				if (remaining > 0) {
-					statusElement.textContent = `Preparing... ${remaining}`;
-				}
+				if (text) console.log(text);
 			},
 		};
 
-		canvasElement.addEventListener("webglcontextlost", (event) => {
+		canvas.addEventListener("webglcontextlost", (event) => {
 			event.preventDefault();
-			statusElement.textContent = "WebGL context lost. Reload the page.";
-		});
-
-		document.getElementById("fullscreen").addEventListener("click", () => {
-			if (Module.requestFullscreen) {
-				Module.requestFullscreen(false, true);
-			} else {
-				canvasElement.requestFullscreen?.();
-			}
+			console.error("WebGL context lost. Reload the page.");
 		});
 	</script>
 	<script async src="csprite.js"></script>
